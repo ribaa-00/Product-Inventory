@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inventory Form</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #7dd5d7, #4a9a9a);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 15px;
+    }
+    .form-container {
+      background: #e3f6f5;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+    }
+    h2.form-heading {
+      color: #056e7a;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-align: center;
+      letter-spacing: 1.1px;
+    }
+    .form-control:focus {
+      border-color: #056e7a;
+      box-shadow: 0 0 8px rgba(5,110,122,0.4);
+    }
+    .btn-primary {
+      background-color: #056e7a;
+      border-color: #056e7a;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: #04545b;
+      border-color: #04545b;
+      box-shadow: 0 0 10px rgba(4,84,91,0.5);
+    }
+    .invalid-feedback {
+      color: #a12f2f;
+      font-weight: 500;
+      margin-top: 6px;
+      display: none; /* hidden initially */
+    }
+    .form-control.is-invalid + .invalid-feedback {
+      display: block;
+    }
+    @media (max-width: 576px) {
+      .form-container {
+        padding: 25px 20px;
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2 class="form-heading">Product Inventory Form</h2>
+    <form id="inventoryForm" novalidate>
+      <div class="mb-3">
+        <label for="itemName" class="form-label">Item Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="itemName" name="itemName" placeholder="Enter item name" />
+        <div class="invalid-feedback">Please enter item name.</div>
+      </div>
+      <div class="mb-3">
+        <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+        <input type="number" min="1" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity" />
+        <div class="invalid-feedback">Please enter quantity.</div>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+        <input type="number" min="0" step="0.01" class="form-control" id="price" name="price" placeholder="Enter price" />
+        <div class="invalid-feedback">Please enter price.</div>
+      </div>
+      <div class="mb-4">
+        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description"></textarea>
+        <div class="invalid-feedback">Please enter description.</div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Add to Inventory</button>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      const form = document.getElementById('inventoryForm');
+      const fields = ['itemName', 'quantity', 'price', 'description'];
+
+      // Validate a single field, returns true if valid
+      function validateField(field, showError) {
+        const input = form.elements[field];
+        const value = input.value.trim();
+        const isValid = value !== '';
+
+        if (!isValid && showError) {
+          input.classList.add('is-invalid');
+          input.classList.remove('is-valid');
+        } else if (isValid) {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        } else {
+          // if no error to show
+          input.classList.remove('is-invalid');
+          input.classList.remove('is-valid');
+        }
+        return isValid;
+      }
+
+      // Flag to detect if user attempted to submit
+      let triedSubmit = false;
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        triedSubmit = true;
+        let allValid = true;
+
+        fields.forEach(field => {
+          if(!validateField(field, true)) {
+            allValid = false;
+          }
+        });
+
+        if (allValid) {
+          alert('Inventory added successfully!');
+          form.reset();
+          // reset validation styles
+          fields.forEach(field => {
+            form.elements[field].classList.remove('is-valid');
+            form.elements[field].classList.remove('is-invalid');
+          });
+          triedSubmit = false;
+        } else {
+          // focus first invalid input
+          const firstInvalid = form.querySelector('.is-invalid');
+          firstInvalid?.focus();
+        }
+      });
+
+      // On input show validation after user typed once or tried submit
+      fields.forEach(field => {
+        const input = form.elements[field];
+
+        let typed = false; // track if user typed once
+
+        input.addEventListener('input', () => {
+          typed = true;
+          validateField(field, triedSubmit || typed);
+        });
+
+        // Also validate on blur for better UX
+        input.addEventListener('blur', () => {
+          validateField(field, triedSubmit || typed);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
+
+```
